@@ -24,22 +24,20 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // initializing the database
+        // Initializing the database
         db = EternalSlumberDatabaseHelper(this)
+        db.insertPropertiesFromFile(this)
 
-        // making the recycler view at the top go horizontal
+        // Setting up the featured properties RecyclerView to scroll horizontally
         val layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         binding.featuredPropRecyclerView.layoutManager = layoutManager
+        propertyAdapterFeatured = PropertyAdapter(db.getAllProperties(), this)
+        binding.featuredPropRecyclerView.adapter = propertyAdapterFeatured
 
-        // getting the database elements and adapting them
-        propertyAdapterAll = PropertyAdapter( db.getAllProperties(), this)
-        propertyAdapterFeatured = PropertyAdapter( db.getAllProperties(), this)
-
-        // binding the database elements to the recycler view
+        // Setting up the all properties RecyclerView with vertical scrolling
+        propertyAdapterAll = PropertyAdapter(db.getAllProperties(), this)
         binding.allPropRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.allPropRecyclerView.adapter = propertyAdapterAll
-        binding.featuredPropRecyclerView.layoutManager = LinearLayoutManager(this)
-        binding.featuredPropRecyclerView.adapter = propertyAdapterFeatured
 
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -48,12 +46,12 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // setting up the button and their functions
+        // Setting up the button and their functions
         binding.addPropertyButton.setOnClickListener{
             addProperty(it)
         }
 
-        // binding the search bar to allow users to search for specified elements
+        // Binding the search bar to allow users to search for specified elements
         binding.searchProperties.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -64,7 +62,6 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
-
     }
 
     //this function will refresh the data when called

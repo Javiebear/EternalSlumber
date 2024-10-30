@@ -98,7 +98,7 @@ class NewProperty : AppCompatActivity() {
         val description = binding.descriptionEditText.text.toString()
 
         // check if everything is filled in
-        if(title != "" || location != "" || cost != "" || description != ""){
+        if(title != "" && location != "" && cost != "" && description != "" && image != null){
             val property = Property(0, title, location, cost, description, image)
             db.insertProperties(property)
 

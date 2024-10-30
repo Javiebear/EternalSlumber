@@ -1,0 +1,5 @@
+1,Cozy Cottage,123 Elm St,200000,A beautiful cozy cottage in a quiet neighborhood.,house.jpg
+2,Modern Apartment,456 Oak Ave,300000,A stylish modern apartment close to the city center.,house.jpg
+3,Spacious Bungalow,789 Pine Rd,250000,A spacious bungalow with a large backyard.,house.jpg
+4,Luxury Villa,321 Maple Dr,500000,A luxurious villa with a pool and stunning views.,house.jpg
+5,Charming Townhouse,654 Cedar Ln,350000,A charming townhouse with easy access to local amenities.,house.jpg

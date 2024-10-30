@@ -5,8 +5,12 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import androidx.core.database.getBlobOrNull
+import java.io.File
+import java.io.FileInputStream
+import java.io.IOException
+import android.util.Log
 
-class EternalSlumberDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION ){
+class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION ){
 
     companion object{
         private const val DATABASE_NAME = "eternalslumber.db"
@@ -31,6 +35,57 @@ class EternalSlumberDatabaseHelper(context: Context) : SQLiteOpenHelper(context,
         val dropTableQuery = "DROP TABLE IF EXISTS $TABLE_NAME"
         db?.execSQL(dropTableQuery)
         onCreate(db)
+    }
+
+    fun insertPropertiesFromFile(context: Context) {
+        val assetManager = context.assets
+        try {
+            val inputStream = assetManager.open("houses.txt") // Open the file from assets
+            inputStream.bufferedReader().forEachLine { line ->
+                val parts = line.split(",")
+
+                // Ensure there are enough parts in the line
+                if (parts.size < 6) {
+                    return@forEachLine // Change to return if not enough parts
+                }
+
+                val id = parts[0].toIntOrNull() ?: run {
+                    return@forEachLine // Skip this line if ID is invalid
+                }
+                val title = parts[1]
+                val location = parts[2]
+                val cost = parts[3]
+                val description = parts[4]
+                val imagePath = parts[5]
+
+                // Check if property already exists
+                if (propertyExists(id)) {
+                    return@forEachLine // Skip insertion if it already exists
+                }
+
+                // Load image as BLOB
+                val imageBlob = getImageAsByteArray(imagePath.trim(), context)
+
+                // Create the Property object and insert it into the DB
+                val property = Property(id, title, location, cost, description, imageBlob)
+                insertProperties(property)
+            }
+            inputStream.close() // Close the input stream
+        } catch (e: Exception) {
+        }
+    }
+
+    private fun getImageAsByteArray(imagePath: String, context: Context): ByteArray? {
+        return try {
+            // Accessing the AssetManager
+            val assetManager = context.assets
+            assetManager.open(imagePath).use { inputStream ->
+                inputStream.readBytes() // Read bytes from the input stream
+            }
+        } catch (e: Exception) {
+            Log.e("DatabaseHelper", "Error loading image from path $imagePath: ${e.message}")
+            null // Return null if there's an error
+        }
     }
 
     // this function is to inset nodes into the database
@@ -131,4 +186,15 @@ class EternalSlumberDatabaseHelper(context: Context) : SQLiteOpenHelper(context,
         db.close()
     }
 
+    // This function checks if a property with the given ID exists
+    fun propertyExists(id: Int): Boolean {
+        val db = readableDatabase
+        val query = "SELECT COUNT(*) FROM $TABLE_NAME WHERE $COLUMN_ID = ?"
+        val cursor = db.rawQuery(query, arrayOf(id.toString()))
+
+        val exists = cursor.moveToFirst() && cursor.getInt(0) > 0
+        cursor.close()
+        db.close()
+        return exists
+    }
 }
