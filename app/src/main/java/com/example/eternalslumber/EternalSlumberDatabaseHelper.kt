@@ -44,13 +44,13 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
             inputStream.bufferedReader().forEachLine { line ->
                 val parts = line.split(",")
 
-                // Ensure there are enough parts in the line
+                // Ensure there are enough parts in the line for the DB insertion
                 if (parts.size < 6) {
                     return@forEachLine // Change to return if not enough parts
                 }
 
                 val id = parts[0].toIntOrNull() ?: run {
-                    return@forEachLine // Skip this line if ID is invalid
+                    return@forEachLine // ID validation for data type int to be ensured
                 }
                 val title = parts[1]
                 val location = parts[2]
@@ -58,15 +58,15 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
                 val description = parts[4]
                 val imagePath = parts[5]
 
+                // Load referenced image as BLOB data
+                val imageBlob = getImageAsByteArray(imagePath.trim(), context)
+
                 // Check if property already exists
                 if (propertyExists(id)) {
                     return@forEachLine // Skip insertion if it already exists
                 }
 
-                // Load image as BLOB
-                val imageBlob = getImageAsByteArray(imagePath.trim(), context)
-
-                // Create the Property object and insert it into the DB
+                // Create a Property object from the data and insert it into the DB
                 val property = Property(id, title, location, cost, description, imageBlob)
                 insertProperties(property)
             }
