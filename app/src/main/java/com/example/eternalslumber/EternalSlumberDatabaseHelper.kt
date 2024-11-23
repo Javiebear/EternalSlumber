@@ -26,8 +26,15 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
 
     // this function creates the tables of the database
     override fun onCreate(db: SQLiteDatabase?) {
+
+        // property table
         val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_TITLE TEXT, $COLUMN_LOCATION TEXT, $COLUMN_COST TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_PROPERTY_IMAGE BLOB)"
+
+        // user table
+        val createUserTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, pass TEXT)"
+
         db?.execSQL(createTableQuery)
+        db?.execSQL(createUserTableQuery)
     }
 
     // updates a table
@@ -44,13 +51,13 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
             inputStream.bufferedReader().forEachLine { line ->
                 val parts = line.split(",")
 
-                // Ensure there are enough parts in the line for the DB insertion
+                // Ensure there are enough parts in the line
                 if (parts.size < 6) {
                     return@forEachLine // Change to return if not enough parts
                 }
 
                 val id = parts[0].toIntOrNull() ?: run {
-                    return@forEachLine // ID validation for data type int to be ensured
+                    return@forEachLine // Skip this line if ID is invalid
                 }
                 val title = parts[1]
                 val location = parts[2]
@@ -58,15 +65,15 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
                 val description = parts[4]
                 val imagePath = parts[5]
 
-                // Load referenced image as BLOB data
-                val imageBlob = getImageAsByteArray(imagePath.trim(), context)
-
                 // Check if property already exists
                 if (propertyExists(id)) {
                     return@forEachLine // Skip insertion if it already exists
                 }
 
-                // Create a Property object from the data and insert it into the DB
+                // Load image as BLOB
+                val imageBlob = getImageAsByteArray(imagePath.trim(), context)
+
+                // Create the Property object and insert it into the DB
                 val property = Property(id, title, location, cost, description, imageBlob)
                 insertProperties(property)
             }
@@ -196,5 +203,45 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         cursor.close()
         db.close()
         return exists
+    }
+
+    fun registerUser (username: String, password: String): Boolean {
+        val db = writableDatabase
+
+        // checks if user exists in the database
+        val cursor = db.rawQuery("SELECT * FROM users WHERE username = ?", arrayOf(username))
+        if (cursor.count > 0) {
+            cursor.close()
+            db.close()
+            return false
+        }
+        cursor.close()
+
+        val values = ContentValues().apply {
+            put("username", username)
+            put("password", password)
+        }
+
+        val result = db.insert("users", null, values)
+
+        db.close()
+
+        // checks if the operation above was successful. true if successes, false if failed
+        return result != -1L
+    }
+
+    fun loginUser(username: String, password: String): Boolean {
+
+        val db = readableDatabase
+        val query = "SELECT * FROM users WHERE username = ? AND password = ?"
+        val cursor = db.rawQuery(query, arrayOf(username, password))
+
+        // If entry exists, login successful, return true
+        val loginSuccess = cursor.moveToFirst()
+
+        cursor.close()
+        db.close()
+
+        return loginSuccess
     }
 }

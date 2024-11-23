@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var propertyAdapterAll: PropertyAdapter
     private lateinit var propertyAdapterFeatured: PropertyAdapter
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -45,6 +46,8 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        val username = intent.getStringExtra("user")
 
         // Setting up the button and their functions
         binding.addPropertyButton.setOnClickListener{
