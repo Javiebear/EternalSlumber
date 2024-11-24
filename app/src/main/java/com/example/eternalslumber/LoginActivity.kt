@@ -68,7 +68,10 @@ class LoginActivity : AppCompatActivity() {
 
         // user can continue as guest, will not pass any username over to main activity
         buttonGuest.setOnClickListener {
+
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            // passes the guest as the username and will be checked in the main page
+            intent.putExtra("user", "Guest")
             startActivity(intent)
         }
 

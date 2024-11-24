@@ -9,8 +9,8 @@
 
     <Button
         android:id="@+id/guestButton"
-        android:layout_width="193dp"
-        android:layout_height="39dp"
+        android:layout_width="239dp"
+        android:layout_height="49dp"
         android:backgroundTint="@color/gray"
         android:text="Continue as guest"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
@@ -19,7 +19,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button2"
-        app:layout_constraintVertical_bias="0.953" />
+        app:layout_constraintVertical_bias="0.949" />
 
     <ImageView
         android:id="@+id/logoImage2"

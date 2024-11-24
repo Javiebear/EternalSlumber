@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.SearchView
+import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -47,7 +48,10 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        // username if logged in, guest if they continued as guest
         val username = intent.getStringExtra("user")
+        val displayName = findViewById<TextView>(R.id.loggedName)
+        displayName.text = "Welcome, " + username
 
         // Setting up the button and their functions
         binding.addPropertyButton.setOnClickListener{
