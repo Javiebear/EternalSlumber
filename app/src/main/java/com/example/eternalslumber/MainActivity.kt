@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.SearchView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -19,10 +20,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var db: EternalSlumberDatabaseHelper
     private lateinit var propertyAdapterAll: PropertyAdapter
     private lateinit var propertyAdapterFeatured: PropertyAdapter
-
-    // the passed over username from login or guest if they continued as guest
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,10 +80,15 @@ class MainActivity : AppCompatActivity() {
 
     // this function will open up a new activity to add a property
     fun addProperty(view: View?){
+
         val username = intent.getStringExtra("user")
-        val intent = Intent(this, NewProperty::class.java)
-        intent.putExtra("user", username)
-        startActivity(intent)
+        if (username.contentEquals("Guest")) {
+            Toast.makeText(this, "You can not add a property on a guest account!", Toast.LENGTH_LONG).show()
+        } else {
+            val intent = Intent(this, NewProperty::class.java)
+            intent.putExtra("user", username)
+            startActivity(intent)
+        }
     }
 
     // this function will handle the searching of items in the database

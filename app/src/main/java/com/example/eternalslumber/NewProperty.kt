@@ -24,9 +24,6 @@ class NewProperty : AppCompatActivity() {
     private lateinit var binding: ActivityNewPropertyBinding
     private lateinit var db: EternalSlumberDatabaseHelper
 
-    // passing user's username
-
-
     // setting up the image variable to store the users images
     var image: ByteArray? = null
 
