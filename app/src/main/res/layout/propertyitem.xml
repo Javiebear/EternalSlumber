@@ -80,6 +80,13 @@
                 android:text="Description"
                 android:textColor="@color/words" />
 
+            <TextView
+                android:id="@+id/usernameTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Created by: username"
+                android:textColor="@color/words" />
+
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

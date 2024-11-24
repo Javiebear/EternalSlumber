@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -42,16 +41,14 @@ class LoginActivity : AppCompatActivity() {
             // takes inputted username and pass and turns it to string
             val inputUsername = username.text.toString()
             val inputPass = pass.text.toString()
-            val user1 = inputUsername
-            val pass1 = inputPass
 
             // runs the username and password through the login function in the database
-            val valid = db.loginUser(user1, pass1)
+            val valid = db.loginUser(inputUsername, inputPass)
 
             // if the login is valid, start intent
             if (valid) {
                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                intent.putExtra("user", username.text.toString())
+                intent.putExtra("user", inputUsername)
                 startActivity(intent)
             }else {
                 // red text tells user wrong pass or username

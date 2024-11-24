@@ -24,6 +24,9 @@ class NewProperty : AppCompatActivity() {
     private lateinit var binding: ActivityNewPropertyBinding
     private lateinit var db: EternalSlumberDatabaseHelper
 
+    // passing user's username
+
+
     // setting up the image variable to store the users images
     var image: ByteArray? = null
 
@@ -97,9 +100,11 @@ class NewProperty : AppCompatActivity() {
         val cost = binding.costEditText.text.toString()
         val description = binding.descriptionEditText.text.toString()
 
+        val username = intent.getStringExtra("user")
+
         // check if everything is filled in
         if(title != "" && location != "" && cost != "" && description != "" && image != null){
-            val property = Property(0, title, location, cost, description, image)
+            val property = Property(0, title, location, cost, description, image, username.toString())
             db.insertProperties(property)
 
             Toast.makeText(this, "Property Created", Toast.LENGTH_SHORT).show()

@@ -20,6 +20,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var propertyAdapterAll: PropertyAdapter
     private lateinit var propertyAdapterFeatured: PropertyAdapter
 
+    // the passed over username from login or guest if they continued as guest
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         // username if logged in, guest if they continued as guest
         val username = intent.getStringExtra("user")
         val displayName = findViewById<TextView>(R.id.loggedName)
-        displayName.text = "Welcome, " + username
+        displayName.text = "Welcome, " + username + "!"
 
         // Setting up the button and their functions
         binding.addPropertyButton.setOnClickListener{
@@ -80,7 +83,9 @@ class MainActivity : AppCompatActivity() {
 
     // this function will open up a new activity to add a property
     fun addProperty(view: View?){
+        val username = intent.getStringExtra("user")
         val intent = Intent(this, NewProperty::class.java)
+        intent.putExtra("user", username)
         startActivity(intent)
     }
 

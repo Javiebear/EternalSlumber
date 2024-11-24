@@ -22,6 +22,7 @@ class PropertyAdapter(
         val location: TextView = itemView.findViewById(R.id.locationTextView)
         val cost: TextView = itemView.findViewById(R.id.costTextView)
         val description: TextView = itemView.findViewById(R.id.descriptionTextView)
+        val username: TextView = itemView.findViewById(R.id.usernameTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PropertyViewHolder {
@@ -47,6 +48,7 @@ class PropertyAdapter(
         holder.location.text = property.location
         holder.cost.text = property.cost
         holder.description.text = property.description
+        holder.username.text = "Created by: ${property.username}"
 
         // making the function to handle if the item has been clicked
         holder.itemView.setOnClickListener(){

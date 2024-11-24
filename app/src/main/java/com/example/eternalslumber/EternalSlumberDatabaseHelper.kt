@@ -22,16 +22,17 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         private const val COLUMN_COST = "cost"
         private const val COLUMN_DESCRIPTION = "description"
         private const val COLUMN_PROPERTY_IMAGE = "image"
+        private const val COLUMN_USERNAME= "username"
     }
 
     // this function creates the tables of the database
     override fun onCreate(db: SQLiteDatabase?) {
 
         // property table
-        val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_TITLE TEXT, $COLUMN_LOCATION TEXT, $COLUMN_COST TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_PROPERTY_IMAGE BLOB)"
+        val createTableQuery = "CREATE TABLE $TABLE_NAME ($COLUMN_ID INTEGER PRIMARY KEY AUTOINCREMENT, $COLUMN_TITLE TEXT, $COLUMN_LOCATION TEXT, $COLUMN_COST TEXT, $COLUMN_DESCRIPTION TEXT, $COLUMN_PROPERTY_IMAGE BLOB, $COLUMN_USERNAME TEXT)"
 
         // user table
-        val createUserTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, pass TEXT)"
+        val createUserTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
 
         db?.execSQL(createTableQuery)
         db?.execSQL(createUserTableQuery)
@@ -52,7 +53,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
                 val parts = line.split(",")
 
                 // Ensure there are enough parts in the line
-                if (parts.size < 6) {
+                if (parts.size < 7) {
                     return@forEachLine // Change to return if not enough parts
                 }
 
@@ -64,6 +65,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
                 val cost = parts[3]
                 val description = parts[4]
                 val imagePath = parts[5]
+                val username = parts[6].trim()
 
                 // Check if property already exists
                 if (propertyExists(id)) {
@@ -74,7 +76,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
                 val imageBlob = getImageAsByteArray(imagePath.trim(), context)
 
                 // Create the Property object and insert it into the DB
-                val property = Property(id, title, location, cost, description, imageBlob)
+                val property = Property(id, title, location, cost, description, imageBlob, username)
                 insertProperties(property)
             }
             inputStream.close() // Close the input stream
@@ -104,6 +106,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
             put(COLUMN_COST, property.cost)
             put(COLUMN_DESCRIPTION, property.description)
             put(COLUMN_PROPERTY_IMAGE, property.propertyImage)
+            put(COLUMN_USERNAME, property.username)
 
         }
         db.insert(TABLE_NAME, null, values)
@@ -124,8 +127,9 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
             val cost = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COST))
             val description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION))
             val image = cursor.getBlobOrNull(cursor.getColumnIndexOrThrow(COLUMN_PROPERTY_IMAGE))
+            val username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME))
 
-            val property = Property(id, title, location, cost, description, image)
+            val property = Property(id, title, location, cost, description, image, username)
             propertyList.add(property)
         }
         cursor.close()
@@ -148,8 +152,9 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
             val cost = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COST))
             val description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION))
             val image = cursor.getBlobOrNull(cursor.getColumnIndexOrThrow(COLUMN_PROPERTY_IMAGE))
+            val username = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME))
 
-            val property = Property(id, title, location, cost, description, image)
+            val property = Property(id, title, location, cost, description, image, username)
             propertyList.add(property)
         }
         cursor.close()
