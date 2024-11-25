@@ -14,7 +14,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
 
     companion object{
         private const val DATABASE_NAME = "eternalslumber.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 3
         private const val TABLE_NAME = "properties"
         private const val COLUMN_ID = "id"
         private const val COLUMN_TITLE = "title"
@@ -34,8 +34,24 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         // user table
         val createUserTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
 
+        // reviews table
+        val createReviewsTableQuery = """
+    CREATE TABLE reviews (
+        review_id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        rating INTEGER CHECK(rating >= 1 AND rating <= 5), -- Ensures rating is between 1 and 5
+        description TEXT,
+        user_id INTEGER, -- Foreign key referring to users table
+        property_id INTEGER, -- Foreign key referring to properties table
+        FOREIGN KEY(user_id) REFERENCES users(id),
+        FOREIGN KEY(property_id) REFERENCES properties(id)
+    )
+"""
+        db?.execSQL(createReviewsTableQuery)
+
         db?.execSQL(createTableQuery)
         db?.execSQL(createUserTableQuery)
+        db?.execSQL(createReviewsTableQuery)
     }
 
     // updates a table
@@ -139,13 +155,23 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
     }
 
     // this function is used to query items that is searched in the search bar
-    fun getQueriedProperties(search: String): List<Property>{
+    fun getQueriedProperties(search: String): List<Property> {
         val propertyList = mutableListOf<Property>()
         val db = readableDatabase
-        val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_TITLE OR $COLUMN_LOCATION OR $COLUMN_COST LIKE ?"
-        val cursor = db.rawQuery(query, arrayOf("%$search%"))
 
-        while(cursor.moveToNext()) { // we iterate through the cursor to see the results
+        // Modify the query to search through title, location, cost, and username (seller name)
+        val query = """
+        SELECT * FROM $TABLE_NAME
+        WHERE $COLUMN_TITLE LIKE ? OR
+              $COLUMN_LOCATION LIKE ? OR
+              $COLUMN_COST LIKE ? OR
+              $COLUMN_USERNAME LIKE ?
+    """
+
+        // Using the same search string for all four fields
+        val cursor = db.rawQuery(query, arrayOf("%$search%", "%$search%", "%$search%", "%$search%"))
+
+        while (cursor.moveToNext()) {
             val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
             val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
             val location = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION))
@@ -157,6 +183,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
             val property = Property(id, title, location, cost, description, image, username)
             propertyList.add(property)
         }
+
         cursor.close()
         db.close()
         return propertyList
@@ -249,4 +276,49 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
 
         return loginSuccess
     }
+
+    fun insertReview(title: String, rating: Int, description: String, userId: Int, propertyId: Int) {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put("title", title)
+            put("rating", rating)
+            put("description", description)
+            put("user_id", userId)
+            put("property_id", propertyId)
+        }
+        db.insert("reviews", null, values)
+        db.close()
+    }
+
+    fun getReviewsForProperty(propertyId: Int): List<Review> {
+        val reviewList = mutableListOf<Review>()
+        val db = readableDatabase
+        val query = "SELECT * FROM reviews WHERE property_id = ?"
+        val cursor = db.rawQuery(query, arrayOf(propertyId.toString()))
+
+        while (cursor.moveToNext()) {
+            val reviewId = cursor.getInt(cursor.getColumnIndexOrThrow("review_id"))
+            val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
+            val rating = cursor.getInt(cursor.getColumnIndexOrThrow("rating"))
+            val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
+            val userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"))
+            val propertyId = cursor.getInt(cursor.getColumnIndexOrThrow("property_id"))
+
+            val review = Review(reviewId, title, rating, description, userId, propertyId)
+            reviewList.add(review)
+        }
+
+        cursor.close()
+        db.close()
+        return reviewList
+    }
+
+    data class Review(
+        val reviewId: Int,
+        val title: String,
+        val rating: Int,
+        val description: String,
+        val userId: Int,
+        val propertyId: Int
+    )
 }
