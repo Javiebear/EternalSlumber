@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         val username = intent.getStringExtra("user")
         val displayName = findViewById<TextView>(R.id.loggedName)
         val profileButton = findViewById<Button>(R.id.profileButton)
-        displayName.text = "Welcome, " + username + "!"
+        displayName.text = "Welcome, " + username.toString() + "!"
 
         profileButton.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)

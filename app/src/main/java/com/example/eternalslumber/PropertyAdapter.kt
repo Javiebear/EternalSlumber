@@ -1,6 +1,8 @@
 package com.example.eternalslumber
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.View
@@ -8,11 +10,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.ImageView
+import java.io.ByteArrayOutputStream
 
 class PropertyAdapter(
     private var propertyList: List<Property>,
     private val context: Context,
-) : RecyclerView.Adapter<PropertyAdapter.PropertyViewHolder>(){
+
+    ) : RecyclerView.Adapter<PropertyAdapter.PropertyViewHolder>(){
 
     // assigning all the values of the Property data object
     class PropertyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView){
@@ -51,9 +55,11 @@ class PropertyAdapter(
 
         // making the function to handle if the item has been clicked
         holder.itemView.setOnClickListener(){
-            // allow the user to view it add new activity/layout
-        }
+            val intent = Intent(context, PropertyView::class.java)
+            intent.putExtra("id", property.id)
 
+            context.startActivity(intent)
+        }
     }
 
     // this method is to update the data when a new item is added to the database
