@@ -9,6 +9,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import android.util.Log
+import com.example.eternalslumber.Review
 
 class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION ){
 
@@ -320,12 +321,4 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         db.close()
     }
 
-    data class Review(
-        val reviewId: Int,
-        val title: String,
-        val rating: Int,
-        val description: String,
-        val userId: Int,
-        val propertyId: Int
-    )
 }
