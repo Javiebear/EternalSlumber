@@ -22,7 +22,14 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         private const val COLUMN_COST = "cost"
         private const val COLUMN_DESCRIPTION = "description"
         private const val COLUMN_PROPERTY_IMAGE = "image"
-        private const val COLUMN_USERNAME= "username"
+        private const val COLUMN_USERNAME = "username"
+        private const val TABLE_REVIEWS = "reviews"
+        private const val COLUMN_REVIEW_ID = "review_id"
+        private const val COLUMN_REVIEW_TITLE = "title"
+        private const val COLUMN_RATING = "rating"
+        private const val COLUMN_REVIEW_DESCRIPTION = "description"
+        private const val COLUMN_USER_ID = "user_id"
+        private const val COLUMN_PROPERTY_ID = "property_id"
     }
 
     // this function creates the tables of the database
@@ -299,6 +306,17 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         cursor.close()
         db.close()
         return reviewList
+    }
+
+    // Delete a review from the reviews table by review_id
+    fun deleteReview(reviewId: Int) {
+        val db = writableDatabase
+        val whereClause = "$COLUMN_REVIEW_ID = ?"
+        val whereArgs = arrayOf(reviewId.toString())
+
+        // Perform the delete operation
+        db.delete(TABLE_REVIEWS, whereClause, whereArgs)
+        db.close()
     }
 
     data class Review(
