@@ -14,7 +14,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
 
     companion object{
         private const val DATABASE_NAME = "eternalslumber.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
         private const val TABLE_NAME = "properties"
         private const val COLUMN_ID = "id"
         private const val COLUMN_TITLE = "title"
@@ -96,6 +96,33 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
             null // Return null if there's an error
         }
     }
+
+    fun getUserProperties(username: String): List<Property> {
+        val propertyList = mutableListOf<Property>()
+        val db = readableDatabase
+        val query = "SELECT * FROM $TABLE_NAME WHERE $COLUMN_USERNAME = ?" // Query with parameter placeholder
+        val cursor = db.rawQuery(query, arrayOf(username))
+
+        while (cursor.moveToNext()) { // Iterate through the cursor to fetch results
+            val id = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_ID))
+            val title = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_TITLE))
+            val location = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_LOCATION))
+            val cost = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_COST))
+            val description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION))
+            val image = cursor.getBlobOrNull(cursor.getColumnIndexOrThrow(COLUMN_PROPERTY_IMAGE))
+            val user = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_USERNAME))
+
+            // Create a Property object and add it to the list
+            val property = Property(id, title, location, cost, description, image, user)
+            propertyList.add(property)
+        }
+
+        cursor.close()
+        db.close()
+
+        return propertyList // Return the list of properties for the user
+    }
+
 
     // this function is to inset nodes into the database
     fun insertProperties(property: Property){

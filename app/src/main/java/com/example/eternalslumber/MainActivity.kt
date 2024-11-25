@@ -3,6 +3,7 @@ package com.example.eternalslumber
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.SearchView
 import android.widget.TextView
 import android.widget.Toast
@@ -51,8 +52,14 @@ class MainActivity : AppCompatActivity() {
         // username if logged in, guest if they continued as guest
         val username = intent.getStringExtra("user")
         val displayName = findViewById<TextView>(R.id.loggedName)
+        val profileButton = findViewById<Button>(R.id.profileButton)
         displayName.text = "Welcome, " + username + "!"
 
+        profileButton.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            intent.putExtra("user", username.toString())
+            startActivity(intent)
+        }
         // Setting up the button and their functions
         binding.addPropertyButton.setOnClickListener{
             addProperty(it)
