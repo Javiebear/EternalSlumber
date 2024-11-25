@@ -14,7 +14,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
 
     companion object{
         private const val DATABASE_NAME = "eternalslumber.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 2
         private const val TABLE_NAME = "properties"
         private const val COLUMN_ID = "id"
         private const val COLUMN_TITLE = "title"
@@ -42,7 +42,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         val createUserTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
 
         // reviews table
-        val createReviewsTableQuery = "CREATE TABLE reviews (review_id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,rating INTEGER CHECK(rating >= 1 AND rating <= 5), -- Ensures rating is between 1 and 5description TEXT,user_id INTEGER, -- Foreign key referring to users tableproperty_id INTEGER, -- Foreign key referring to properties tableFOREIGN KEY(user_id) REFERENCES users(id),FOREIGN KEY(property_id) REFERENCES properties(id))"
+        val createReviewsTableQuery = "CREATE TABLE reviews (review_id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,rating INTEGER CHECK(rating >= 1 AND rating <= 5), description TEXT,user_id INTEGER, property_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id),FOREIGN KEY(property_id) REFERENCES properties(id))"
 
         db?.execSQL(createTableQuery)
         db?.execSQL(createUserTableQuery)
@@ -92,6 +92,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
             }
             inputStream.close() // Close the input stream
         } catch (e: Exception) {
+            Log.e("DatabaseHelper", "Error inserting properties from file: ${e.message}")
         }
     }
 

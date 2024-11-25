@@ -12,7 +12,6 @@ import android.widget.ImageView
 class PropertyAdapter(
     private var propertyList: List<Property>,
     private val context: Context,
-
 ) : RecyclerView.Adapter<PropertyAdapter.PropertyViewHolder>(){
 
     // assigning all the values of the Property data object

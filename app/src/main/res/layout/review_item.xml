@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/reviewTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Review Title"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
+
+    <RatingBar
+        android:id="@+id/ratingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:numStars="5"
+        android:stepSize="0.5"/>
+
+    <TextView
+        android:id="@+id/reviewDescriptionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Review Description: "
+        android:textSize="14sp"/>
+
+    <TextView
+        android:id="@+id/userIdTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reviewed by: "
+        android:textSize="12sp"
+        android:textColor="#888"/>
+
+    <TextView
+        android:id="@+id/propertyIdTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Property: "
+        android:textSize="12sp"
+        android:textColor="#888"/>
+</LinearLayout>
