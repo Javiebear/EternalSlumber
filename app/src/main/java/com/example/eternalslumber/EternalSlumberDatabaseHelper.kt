@@ -35,19 +35,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         val createUserTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
 
         // reviews table
-        val createReviewsTableQuery = """
-    CREATE TABLE reviews (
-        review_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        rating INTEGER CHECK(rating >= 1 AND rating <= 5), -- Ensures rating is between 1 and 5
-        description TEXT,
-        user_id INTEGER, -- Foreign key referring to users table
-        property_id INTEGER, -- Foreign key referring to properties table
-        FOREIGN KEY(user_id) REFERENCES users(id),
-        FOREIGN KEY(property_id) REFERENCES properties(id)
-    )
-"""
-        db?.execSQL(createReviewsTableQuery)
+        val createReviewsTableQuery = "CREATE TABLE reviews (review_id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,rating INTEGER CHECK(rating >= 1 AND rating <= 5), -- Ensures rating is between 1 and 5description TEXT,user_id INTEGER, -- Foreign key referring to users tableproperty_id INTEGER, -- Foreign key referring to properties tableFOREIGN KEY(user_id) REFERENCES users(id),FOREIGN KEY(property_id) REFERENCES properties(id))"
 
         db?.execSQL(createTableQuery)
         db?.execSQL(createUserTableQuery)
