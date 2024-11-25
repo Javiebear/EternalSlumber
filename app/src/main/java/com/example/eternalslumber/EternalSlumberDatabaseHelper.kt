@@ -14,7 +14,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
 
     companion object{
         private const val DATABASE_NAME = "eternalslumber.db"
-        private const val DATABASE_VERSION = 2
+        private const val DATABASE_VERSION = 3
         private const val TABLE_NAME = "properties"
         private const val COLUMN_ID = "id"
         private const val COLUMN_TITLE = "title"

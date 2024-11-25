@@ -2,5 +2,7 @@
     <string name="app_name">EternalSlumber</string>
     <string name="lname">lName</string>
     <string name="loggedName2">loggedName2</string>
+    <string name="profile_page">Profile Page</string>
+    <string name="username">Username</string>
     loggedName2
 </resources>
