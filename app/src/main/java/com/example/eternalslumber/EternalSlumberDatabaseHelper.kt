@@ -27,9 +27,8 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         private const val TABLE_REVIEWS = "reviews"
         private const val COLUMN_REVIEW_ID = "review_id"
         private const val COLUMN_REVIEW_TITLE = "title"
-        private const val COLUMN_RATING = "rating"
         private const val COLUMN_REVIEW_DESCRIPTION = "description"
-        private const val COLUMN_USER_ID = "user_id"
+        private const val COLUMN_USER = "user"
         private const val COLUMN_PROPERTY_ID = "property_id"
     }
 
@@ -43,7 +42,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         val createUserTableQuery = "CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)"
 
         // reviews table
-        val createReviewsTableQuery = "CREATE TABLE reviews (review_id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT,rating INTEGER CHECK(rating >= 1 AND rating <= 5), description TEXT,user_id INTEGER, property_id INTEGER, FOREIGN KEY(user_id) REFERENCES users(id),FOREIGN KEY(property_id) REFERENCES properties(id))"
+        val createReviewsTableQuery = "CREATE TABLE reviews (review_id INTEGER PRIMARY KEY AUTOINCREMENT,title TEXT, description TEXT,user TEXT, property_id INTEGER,FOREIGN KEY(property_id) REFERENCES properties(id))"
 
         db?.execSQL(createTableQuery)
         db?.execSQL(createUserTableQuery)
@@ -57,6 +56,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         onCreate(db)
     }
 
+    // this sets up predefined properties from a file
     fun insertPropertiesFromFile(context: Context) {
         val assetManager = context.assets
         try {
@@ -110,6 +110,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         }
     }
 
+    // this function retrieves all properties that is assigned to the inputted user
     fun getUserProperties(username: String): List<Property> {
         val propertyList = mutableListOf<Property>()
         val db = readableDatabase
@@ -286,6 +287,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         return exists
     }
 
+    // function to register users account into the database with their input
     fun registerUser (username: String, password: String): Boolean {
         val db = writableDatabase
 
@@ -311,6 +313,7 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         return result != -1L
     }
 
+    // function to check the login of the user and password when the user is logging in, returns true or false
     fun loginUser(username: String, password: String): Boolean {
 
         val db = readableDatabase
@@ -326,19 +329,21 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         return loginSuccess
     }
 
-    fun insertReview(title: String, rating: Int, description: String, userId: Int, propertyId: Int) {
+    // inserts review into the review table when a user creates a review
+    fun insertReview(review: Review) {
         val db = writableDatabase
-        val values = ContentValues().apply {
-            put("title", title)
-            put("rating", rating)
-            put("description", description)
-            put("user_id", userId)
-            put("property_id", propertyId)
+        val values = ContentValues().apply{ // Content values is used to store values associated with column names
+            put(COLUMN_REVIEW_TITLE, review.title) // apply allows for operations to occur and put allows you to add to the database
+            put(COLUMN_REVIEW_DESCRIPTION, review.description)
+            put(COLUMN_USER, review.user)
+            put(COLUMN_PROPERTY_ID, review.propertyId)
+
         }
-        db.insert("reviews", null, values)
+        db.insert(TABLE_REVIEWS, null, values)
         db.close()
     }
 
+    // function to get all reviews for the certain property using its ID
     fun getReviewsForProperty(propertyId: Int): List<Review> {
         val reviewList = mutableListOf<Review>()
         val db = readableDatabase
@@ -348,12 +353,11 @@ class EternalSlumberDatabaseHelper(private val context: Context) : SQLiteOpenHel
         while (cursor.moveToNext()) {
             val reviewId = cursor.getInt(cursor.getColumnIndexOrThrow("review_id"))
             val title = cursor.getString(cursor.getColumnIndexOrThrow("title"))
-            val rating = cursor.getInt(cursor.getColumnIndexOrThrow("rating"))
             val description = cursor.getString(cursor.getColumnIndexOrThrow("description"))
-            val userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id"))
+            val user = cursor.getString(cursor.getColumnIndexOrThrow("user"))
             val propertyId = cursor.getInt(cursor.getColumnIndexOrThrow("property_id"))
 
-            val review = Review(reviewId, title, rating, description, userId, propertyId)
+            val review = Review(reviewId, title, description, user, propertyId)
             reviewList.add(review)
         }
 

@@ -37,7 +37,7 @@
         android:layout_marginStart="144dp"
         android:backgroundTint="@color/gray"
         android:fontFamily="@font/golos_text"
-        android:text="Home"
+        android:text="Profile"
         app:cornerRadius="0dp"
         app:layout_constraintBottom_toBottomOf="@+id/toolbar"
         app:layout_constraintStart_toStartOf="@+id/toolbar"
@@ -47,7 +47,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/featuredPropRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="125dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:padding="10dp"
         android:scrollbars="horizontal"

@@ -56,8 +56,9 @@ class PropertyAdapter(
         // making the function to handle if the item has been clicked
         holder.itemView.setOnClickListener(){
             val intent = Intent(context, PropertyView::class.java)
+            val username = intent.getStringExtra("user")
+            intent.putExtra("user",username.toString())
             intent.putExtra("id", property.id)
-
             context.startActivity(intent)
         }
     }
